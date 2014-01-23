@@ -20,7 +20,7 @@ public class Move : MonoBehaviour
     }
     
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
 
         if (rigidbody == null)
@@ -38,7 +38,10 @@ public class Move : MonoBehaviour
                 if (!moveRotation)
                     rigidbody.velocity += direction.normalized * rigidbodyTranslationSpeed * Time.deltaTime;
                 else
+                {
                     rigidbody.velocity += transform.TransformDirection(direction.normalized * rigidbodyTranslationSpeed * Time.deltaTime);
+                    //rigidbody.AddForce(transform.TransformDirection(direction.normalized * rigidbodyTranslationSpeed),ForceMode.Force);
+                }
             }
 
             //Rotation
@@ -47,6 +50,7 @@ public class Move : MonoBehaviour
                 moveRotation = true;
                 Quaternion deltarotation = Quaternion.Euler(rotation * rigidbodyRotationSpeed * Time.deltaTime);
                 rigidbody.MoveRotation(rigidbody.rotation * deltarotation);
+                //rigidbody.AddTorque(rotation * rigidbodyRotationSpeed,ForceMode.VelocityChange);
             }
 
             /*if (Input.GetKey (KeyboardControls.Singleton.Reset))
