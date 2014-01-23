@@ -8,9 +8,9 @@ public class CursorHit : MonoBehaviour {
 	
 	// Update is called once per frame
 	void LateUpdate () {
-		if (Input.GetKey(KeyCode.UpArrow))
+        if (Input.GetKey(KeyCode.PageUp))
 			offset += Time.deltaTime;
-		if (Input.GetKey(KeyCode.DownArrow))
+		if (Input.GetKey(KeyCode.PageDown))
 			offset -= Time.deltaTime;
 		
 		Ray cursorRay = Camera.main.ScreenPointToRay(Input.mousePosition);
