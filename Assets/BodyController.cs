@@ -2,7 +2,8 @@
 using System.Collections;
 
 [System.Serializable]
-public class BodyBendingSegment {
+public class BodyBendingSegment
+{
     public Transform firstTransform;
     public Transform lastTransform;
     public float thresholdAngleDifference = 0;
@@ -20,12 +21,14 @@ public class BodyBendingSegment {
 }
 
 [System.Serializable]
-public class BodyNonAffectedJoints {
+public class BodyNonAffectedJoints
+{
     public Transform joint;
     public float effect = 0;
 }
 
-public class BodyController : MonoBehaviour {
+public class BodyController : MonoBehaviour
+{
     
     public Transform rootNode;
     public bool headcontrol;
@@ -48,7 +51,7 @@ public class BodyController : MonoBehaviour {
     // Setup segments
     private void SetupSegment(BodyBendingSegment[] segments, Vector3 look, Vector3 up)
     {
-        foreach (BodyBendingSegment segment in headSegments) 
+        foreach (BodyBendingSegment segment in segments)
         {
             Quaternion parentRot = segment.firstTransform.parent.rotation;
             Quaternion parentRotInv = Quaternion.Inverse(parentRot);
@@ -62,44 +65,33 @@ public class BodyController : MonoBehaviour {
             
             segment.chainLength = 1;
             Transform t = segment.lastTransform;
-            while (t != segment.firstTransform && t != t.root) {
+            while (t != segment.firstTransform && t != t.root)
+            {
                 segment.chainLength++;
                 t = t.parent;
             }
             
             segment.origRotations = new Quaternion[segment.chainLength];
             t = segment.lastTransform;
-            for (int i=segment.chainLength-1; i>=0; i--) {
-                segment.origRotations[i] = t.localRotation;
+            for (int i=segment.chainLength-1; i>=0; i--)
+            {
+                segment.origRotations [i] = t.localRotation;
                 t = t.parent;
             }
         }
     }
 
-    void Start () {
-        if (rootNode == null) {
-            rootNode = transform;
-        }
-        
-        // Setup segments
-        if (headcontrol)
-            SetupSegment(headSegments,headLookVector,headUpVector);
-        if (leftArmcontrol)
-            SetupSegment(leftArmSegments,armAimVector,armUpVector);
-        if (rightArmcontrol)
-            SetupSegment(rightArmSegments,armAimVector,armUpVector);
-
-    }
-
     // Handle each segment
     private void HandleSegments(BodyBendingSegment[] segments, Vector3 target)
     {
-        foreach (BodyBendingSegment segment in segments) 
+        foreach (BodyBendingSegment segment in segments)
         {
             Transform t = segment.lastTransform;
-            if (overrideAnimation) {
-                for (int i=segment.chainLength-1; i>=0; i--) {
-                    t.localRotation = segment.origRotations[i];
+            if (overrideAnimation)
+            {
+                for (int i=segment.chainLength-1; i>=0; i--)
+                {
+                    t.localRotation = segment.origRotations [i];
                     t = t.parent;
                 }
             }
@@ -116,7 +108,7 @@ public class BodyController : MonoBehaviour {
             // Get the horizontal and vertical rotation angle to look at the target
             float hAngle = AngleAroundAxis(
                 segment.referenceLookDir, lookDirGoal, segment.referenceUpDir
-                );
+            );
             
             Vector3 rightOfTarget = Vector3.Cross(segment.referenceUpDir, lookDirGoal);
             
@@ -125,27 +117,27 @@ public class BodyController : MonoBehaviour {
             
             float vAngle = AngleAroundAxis(
                 lookDirGoalinHPlane, lookDirGoal, rightOfTarget
-                );
+            );
             
             // Handle threshold angle difference, bending multiplier,
             // and max angle difference here
             float hAngleThr = Mathf.Max(
                 0, Mathf.Abs(hAngle) - segment.thresholdAngleDifference
-                ) * Mathf.Sign(hAngle);
+            ) * Mathf.Sign(hAngle);
             
             float vAngleThr = Mathf.Max(
                 0, Mathf.Abs(vAngle) - segment.thresholdAngleDifference
-                ) * Mathf.Sign(vAngle);
+            ) * Mathf.Sign(vAngle);
             
             hAngle = Mathf.Max(
                 Mathf.Abs(hAngleThr) * Mathf.Abs(segment.bendingMultiplier),
                 Mathf.Abs(hAngle) - segment.maxAngleDifference
-                ) * Mathf.Sign(hAngle) * Mathf.Sign(segment.bendingMultiplier);
+            ) * Mathf.Sign(hAngle) * Mathf.Sign(segment.bendingMultiplier);
             
             vAngle = Mathf.Max(
                 Mathf.Abs(vAngleThr) * Mathf.Abs(segment.bendingMultiplier),
                 Mathf.Abs(vAngle) - segment.maxAngleDifference
-                ) * Mathf.Sign(vAngle) * Mathf.Sign(segment.bendingMultiplier);
+            ) * Mathf.Sign(vAngle) * Mathf.Sign(segment.bendingMultiplier);
             
             // Handle max bending angle here
             hAngle = Mathf.Clamp(hAngle, -segment.maxBendingAngle, segment.maxBendingAngle);
@@ -157,15 +149,15 @@ public class BodyController : MonoBehaviour {
             // Lerp angles
             segment.angleH = Mathf.Lerp(
                 segment.angleH, hAngle, Time.deltaTime * segment.responsiveness
-                );
+            );
             segment.angleV = Mathf.Lerp(
                 segment.angleV, vAngle, Time.deltaTime * segment.responsiveness
-                );
+            );
             
             // Get direction
             lookDirGoal = Quaternion.AngleAxis(segment.angleH, segment.referenceUpDir)
                 * Quaternion.AngleAxis(segment.angleV, referenceRightDir)
-                    * segment.referenceLookDir;
+                * segment.referenceLookDir;
             
             // Make look and up perpendicular
             Vector3 upDirGoal = segment.referenceUpDir;
@@ -173,7 +165,7 @@ public class BodyController : MonoBehaviour {
             
             // Interpolated look and up directions in neck parent space
             Vector3 lookDir = lookDirGoal;
-            segment.dirUp = Vector3.Slerp(segment.dirUp, upDirGoal, Time.deltaTime*5);
+            segment.dirUp = Vector3.Slerp(segment.dirUp, upDirGoal, Time.deltaTime * 5);
             Vector3.OrthoNormalize(ref lookDir, ref segment.dirUp);
             
             // Look rotation in world space
@@ -182,30 +174,51 @@ public class BodyController : MonoBehaviour {
                 * Quaternion.Inverse(
                 parentRot * Quaternion.LookRotation(
                 segment.referenceLookDir, segment.referenceUpDir
-                )
-                )
+            )
+            )
                 );
             
             // Distribute rotation over all joints in segment
             Quaternion dividedRotation =
                 Quaternion.Slerp(Quaternion.identity, lookRot, effect / segment.chainLength);
             t = segment.lastTransform;
-            for (int i=0; i<segment.chainLength; i++) {
+            for (int i=0; i<segment.chainLength; i++)
+            {
                 t.rotation = dividedRotation * t.rotation;
                 t = t.parent;
             }
         }
     }
 
-    void LateUpdate () {
+    void Start()
+    {
+        if (rootNode == null)
+        {
+            rootNode = transform;
+        }
+        
+        // Setup segments
+        if (headcontrol)
+            SetupSegment(headSegments, headLookVector, headUpVector);
+        if (leftArmcontrol)
+            SetupSegment(leftArmSegments, armAimVector, armUpVector);
+        if (rightArmcontrol)
+            SetupSegment(rightArmSegments, armAimVector, armUpVector);
+        
+    }
+
+    void LateUpdate()
+    {
         if (Time.deltaTime == 0)
             return;
         
         // Remember initial directions of joints that should not be affected
         Vector3[] jointDirections = new Vector3[BodyNonAffectedJoints.Length];
-        for (int i=0; i<BodyNonAffectedJoints.Length; i++) {
-            foreach (Transform child in BodyNonAffectedJoints[i].joint) {
-                jointDirections[i] = child.position - BodyNonAffectedJoints[i].joint.position;
+        for (int i=0; i<BodyNonAffectedJoints.Length; i++)
+        {
+            foreach (Transform child in BodyNonAffectedJoints[i].joint)
+            {
+                jointDirections [i] = child.position - BodyNonAffectedJoints [i].joint.position;
                 break;
             }
         }
@@ -219,26 +232,29 @@ public class BodyController : MonoBehaviour {
             HandleSegments(rightArmSegments, rightArmTarget);
         
         // Handle non affected joints
-        for (int i=0; i<BodyNonAffectedJoints.Length; i++) {
+        for (int i=0; i<BodyNonAffectedJoints.Length; i++)
+        {
             Vector3 newJointDirection = Vector3.zero;
             
-            foreach (Transform child in BodyNonAffectedJoints[i].joint) {
-                newJointDirection = child.position - BodyNonAffectedJoints[i].joint.position;
+            foreach (Transform child in BodyNonAffectedJoints[i].joint)
+            {
+                newJointDirection = child.position - BodyNonAffectedJoints [i].joint.position;
                 break;
             }
             
             Vector3 combinedJointDirection = Vector3.Slerp(
-                jointDirections[i], newJointDirection, BodyNonAffectedJoints[i].effect
-                );
+                jointDirections [i], newJointDirection, BodyNonAffectedJoints [i].effect
+            );
             
-            BodyNonAffectedJoints[i].joint.rotation = Quaternion.FromToRotation(
+            BodyNonAffectedJoints [i].joint.rotation = Quaternion.FromToRotation(
                 newJointDirection, combinedJointDirection
-                ) * BodyNonAffectedJoints[i].joint.rotation;
+            ) * BodyNonAffectedJoints [i].joint.rotation;
         }
     }
     
     // The angle between dirA and dirB around axis
-    public static float AngleAroundAxis (Vector3 dirA, Vector3 dirB, Vector3 axis) {
+    public static float AngleAroundAxis(Vector3 dirA, Vector3 dirB, Vector3 axis)
+    {
         // Project A and B onto the plane orthogonal target axis
         dirA = dirA - Vector3.Project(dirA, axis);
         dirB = dirB - Vector3.Project(dirB, axis);
