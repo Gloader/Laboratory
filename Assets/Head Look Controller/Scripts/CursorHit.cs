@@ -4,6 +4,9 @@ using System.Collections;
 public class CursorHit : MonoBehaviour {
 	
 	public HeadLookController headLook;
+    public LeftArmController leftArm;
+    public RightArmController rightArm;
+    public BodyController controller;
 	private float offset = 1.5f;
 	
 	// Update is called once per frame
@@ -20,5 +23,11 @@ public class CursorHit : MonoBehaviour {
 		}
 		
 		headLook.target = transform.position;
+        rightArm.target = transform.position;
+        leftArm.target = transform.position;
+
+        controller.headTarget = transform.position;
+        controller.leftArmTarget = transform.position;
+        controller.rightArmTarget = transform.position;
 	}
 }
