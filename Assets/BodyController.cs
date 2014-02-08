@@ -198,11 +198,11 @@ public class BodyController : MonoBehaviour
         }
         
         // Setup segments
-        if (headcontrol)
+        //if (headcontrol)
             SetupSegment(headSegments, headLookVector, headUpVector);
-        if (leftArmcontrol)
+        //if (leftArmcontrol)
             SetupSegment(leftArmSegments, armAimVector, armUpVector);
-        if (rightArmcontrol)
+        //if (rightArmcontrol)
             SetupSegment(rightArmSegments, armAimVector, armUpVector);
         
     }

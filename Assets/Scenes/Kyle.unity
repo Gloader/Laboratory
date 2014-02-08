@@ -2943,9 +2943,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rootNode: {fileID: 0}
-  headcontrol: 1
+  headcontrol: 0
   leftArmcontrol: 1
-  rightArmcontrol: 1
+  rightArmcontrol: 0
   headSegments:
   - firstTransform: {fileID: 1057917722}
     lastTransform: {fileID: 825505243}
@@ -2962,27 +2962,20 @@ MonoBehaviour:
     maxBendingAngle: 90
     responsiveness: 2.5
   leftArmSegments:
-  - firstTransform: {fileID: 610544668}
-    lastTransform: {fileID: 2052623634}
-    thresholdAngleDifference: 0
-    bendingMultiplier: .699999988
-    maxAngleDifference: 30
-    maxBendingAngle: 80
-    responsiveness: 4
   - firstTransform: {fileID: 1965530159}
     lastTransform: {fileID: 610544668}
     thresholdAngleDifference: 0
     bendingMultiplier: .699999988
-    maxAngleDifference: 30
-    maxBendingAngle: 80
+    maxAngleDifference: 90
+    maxBendingAngle: 90
     responsiveness: 4
-  - firstTransform: {fileID: 1803270786}
+  - firstTransform: {fileID: 1430572575}
     lastTransform: {fileID: 1965530159}
-    thresholdAngleDifference: 90
-    bendingMultiplier: .699999988
-    maxAngleDifference: 30
-    maxBendingAngle: 80
-    responsiveness: 1
+    thresholdAngleDifference: 0
+    bendingMultiplier: 0
+    maxAngleDifference: 0
+    maxBendingAngle: 0
+    responsiveness: 0
   rightArmSegments:
   - firstTransform: {fileID: 1173629505}
     lastTransform: {fileID: 909322463}
@@ -3009,8 +3002,8 @@ MonoBehaviour:
     lastTransform: {fileID: 726931449}
     thresholdAngleDifference: 30
     bendingMultiplier: .600000024
-    maxAngleDifference: 90
-    maxBendingAngle: 90
+    maxAngleDifference: 30
+    maxBendingAngle: 30
     responsiveness: 2.5
   BodyNonAffectedJoints: []
   headLookVector: {x: 0, y: 0, z: 1}
