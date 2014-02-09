@@ -42,13 +42,13 @@ public class HeadLookController : MonoBehaviour {
 		}
 		
 		// Setup segments
-		foreach (BendingSegment segment in segments) {
-			Quaternion parentRot = segment.firstTransform.parent.rotation;
-			Quaternion parentRotInv = Quaternion.Inverse(parentRot);
+		foreach (BendingSegment segment in segments) { //Premier segment S1: Neck-Head
+			Quaternion parentRot = segment.firstTransform.parent.rotation; //S1: Rotation du buste
+			Quaternion parentRotInv = Quaternion.Inverse(parentRot); //S1: Rotation inverse du buste
 			segment.referenceLookDir =
-				parentRotInv * rootNode.rotation * headLookVector.normalized;
+                parentRotInv * rootNode.rotation * headLookVector.normalized; //S1:referenceLookDir prend en compte la rotation du rootNode et du buste 
 			segment.referenceUpDir =
-				parentRotInv * rootNode.rotation * headUpVector.normalized;
+                parentRotInv * rootNode.rotation * headUpVector.normalized; //S1:referenceUpDir prend en compte la rotation du rootNode et du buste 
 			segment.angleH = 0;
 			segment.angleV = 0;
 			segment.dirUp = segment.referenceUpDir;
@@ -69,7 +69,30 @@ public class HeadLookController : MonoBehaviour {
 		}
 	}
 	
-	void LateUpdate () {
+    void OnDrawGizmos()
+    {
+        Vector3 p;
+
+        foreach (BendingSegment segment in segments) 
+        {
+            Gizmos.color = Color.red;
+            p = segment.firstTransform.parent.transform.position;
+            Gizmos.DrawLine(p, p + Vector3.right);
+            Gizmos.DrawLine(p, p + Vector3.up);
+            Gizmos.DrawLine(p, p + Vector3.forward);
+            //Gizmos.DrawWireSphere(p, 1.0f);
+
+            Gizmos.color = Color.blue;
+            p = segment.firstTransform.parent.transform.position;
+            Gizmos.DrawLine(p, p + segment.referenceLookDir);
+            Gizmos.DrawLine(p, p + segment.referenceUpDir);
+
+
+
+        }
+    }
+
+    void LateUpdate () {
 		if (Time.deltaTime == 0)
 			return;
 		
