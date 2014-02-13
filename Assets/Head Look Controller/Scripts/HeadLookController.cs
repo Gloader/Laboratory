@@ -35,6 +35,14 @@ public class HeadLookController : MonoBehaviour {
 	public Vector3 target = Vector3.zero;
 	public float effect = 1;
 	public bool overrideAnimation = false;
+
+    // Desired look direction in world space
+    Vector3 lookDirWorld = Vector3.zero;  
+    // Desired look directions in neck parent space
+    Vector3 lookDirGoal = Vector3.zero;
+
+    Vector3 rightOfTarget = Vector3.zero;   
+    Vector3 lookDirGoalinHPlane = Vector3.zero;
 	
 	void Start () {
 		if (rootNode == null) {
@@ -72,23 +80,44 @@ public class HeadLookController : MonoBehaviour {
     void OnDrawGizmos()
     {
         Vector3 p;
+        Transform t;
 
         foreach (BendingSegment segment in segments) 
         {
-            Gizmos.color = Color.red;
+            t = this.transform;
             p = segment.firstTransform.parent.transform.position;
-            Gizmos.DrawLine(p, p + Vector3.right);
-            Gizmos.DrawLine(p, p + Vector3.up);
-            Gizmos.DrawLine(p, p + Vector3.forward);
+
+            Gizmos.color = Color.black;
+            //Gizmos.DrawLine(p, p + t.TransformDirection(Vector3.right));
+            //Gizmos.DrawLine(p, p + t.TransformDirection(Vector3.up));
+            Gizmos.DrawLine(p, p + t.TransformDirection(Vector3.forward));
             //Gizmos.DrawWireSphere(p, 1.0f);
 
             Gizmos.color = Color.blue;
-            p = segment.firstTransform.parent.transform.position;
-            Gizmos.DrawLine(p, p + segment.referenceLookDir);
-            Gizmos.DrawLine(p, p + segment.referenceUpDir);
+            Gizmos.DrawLine(p, p + t.TransformDirection(segment.referenceLookDir));
+            //Gizmos.DrawLine(p, p + t.TransformDirection(segment.referenceUpDir));
+           
+            // Desired look direction in world space
+            Gizmos.color = Color.green;
+            //Gizmos.DrawLine(p, p + lookDirWorld);
+            //Gizmos.DrawLine(p, p + Vector3.Reflect(lookDirGoal,segment.referenceUpDir));
 
+            Gizmos.color = Color.cyan;
+            //Gizmos.DrawLine(p, p + rightOfTarget);
+            //Gizmos.DrawLine(p, p + lookDirGoalinHPlane);
 
+            Gizmos.color = Color.blue;
+            //Gizmos.DrawLine(p + segment.referenceLookDir, p + lookDirGoal);
 
+        }
+
+        //joints not affected
+        Gizmos.color = Color.white;
+        for (int i=0; i<nonAffectedJoints.Length; i++) {
+            foreach (Transform child in nonAffectedJoints[i].joint) {
+                Gizmos.DrawLine(child.position, nonAffectedJoints[i].joint.position);
+                break;
+            }
         }
     }
 
@@ -119,19 +148,19 @@ public class HeadLookController : MonoBehaviour {
 			Quaternion parentRotInv = Quaternion.Inverse(parentRot);
 			
 			// Desired look direction in world space
-			Vector3 lookDirWorld = (target - segment.lastTransform.position).normalized;
+			/*Vector3*/ lookDirWorld = (target - segment.lastTransform.position).normalized;
 			
 			// Desired look directions in neck parent space
-			Vector3 lookDirGoal = (parentRotInv * lookDirWorld);
+			/*Vector3*/ lookDirGoal = (parentRotInv * lookDirWorld);
 			
 			// Get the horizontal and vertical rotation angle to look at the target
 			float hAngle = AngleAroundAxis(
 				segment.referenceLookDir, lookDirGoal, segment.referenceUpDir
 			);
 			
-			Vector3 rightOfTarget = Vector3.Cross(segment.referenceUpDir, lookDirGoal);
+			/*Vector3*/ rightOfTarget = Vector3.Cross(segment.referenceUpDir, lookDirGoal);
 			
-			Vector3 lookDirGoalinHPlane =
+			/*Vector3 */lookDirGoalinHPlane =
 				lookDirGoal - Vector3.Project(lookDirGoal, segment.referenceUpDir);
 			
 			float vAngle = AngleAroundAxis(
