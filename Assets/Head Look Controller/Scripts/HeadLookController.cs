@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using UnityEditor;
 
 [System.Serializable]
 public class BendingSegment {
@@ -82,32 +83,34 @@ public class HeadLookController : MonoBehaviour {
         Vector3 p;
         Transform t;
 
+        t = this.transform;
+        p = this.transform.position;
+
+        DrawVector(p, p + t.TransformDirection(headLookVector),Color.black,"headLookVector");
+        DrawVector(p, p + t.TransformDirection(headUpVector),Color.black,"headUpVector");
+
+        //Desired look direction in world space
+        DrawVector(p, p + lookDirWorld,Color.green,"lookDirWorld");
+
         foreach (BendingSegment segment in segments) 
         {
-            t = this.transform;
+            t = segment.firstTransform.parent.transform;
             p = segment.firstTransform.parent.transform.position;
 
-            Gizmos.color = Color.black;
-            //Gizmos.DrawLine(p, p + t.TransformDirection(Vector3.right));
-            //Gizmos.DrawLine(p, p + t.TransformDirection(Vector3.up));
-            Gizmos.DrawLine(p, p + t.TransformDirection(Vector3.forward));
-            //Gizmos.DrawWireSphere(p, 1.0f);
+            DrawVector(p, p + Vector3.Reflect(lookDirGoal,segment.referenceUpDir),Color.green,"lookDirGoal");
 
-            Gizmos.color = Color.blue;
-            Gizmos.DrawLine(p, p + t.TransformDirection(segment.referenceLookDir));
-            //Gizmos.DrawLine(p, p + t.TransformDirection(segment.referenceUpDir));
-           
-            // Desired look direction in world space
-            Gizmos.color = Color.green;
-            //Gizmos.DrawLine(p, p + lookDirWorld);
-            //Gizmos.DrawLine(p, p + Vector3.Reflect(lookDirGoal,segment.referenceUpDir));
+            DrawVector(p, p + t.TransformDirection(segment.referenceLookDir),Color.blue,"referenceLookDir");
 
-            Gizmos.color = Color.cyan;
-            //Gizmos.DrawLine(p, p + rightOfTarget);
-            //Gizmos.DrawLine(p, p + lookDirGoalinHPlane);
+            DrawVector(p, p + segment.referenceUpDir,Color.blue,"referenceUpDir");
 
-            Gizmos.color = Color.blue;
-            //Gizmos.DrawLine(p + segment.referenceLookDir, p + lookDirGoal);
+            t = segment.firstTransform;
+            p = segment.firstTransform.position;
+                              
+//
+//            DrawVector(p, p + rightOfTarget,Color.cyan,"rightOfTarget");
+//            DrawVector(p, p + lookDirGoalinHPlane,Color.cyan,"lookDirGoalinHPlane");
+
+            //DrawVector(p + segment.referenceLookDir, p + lookDirGoal,Color.blue);
 
         }
 
@@ -118,6 +121,43 @@ public class HeadLookController : MonoBehaviour {
                 Gizmos.DrawLine(child.position, nonAffectedJoints[i].joint.position);
                 break;
             }
+        }
+    }
+
+    void DrawVector(Vector3 from, Vector3 to, Color color, string text = null)
+    {
+        Vector3 v = to - from;
+
+        Gizmos.color = color;
+        //DrawVector(from,to,text);
+
+        GUIStyle style = new GUIStyle();
+        style.fontSize = 6;
+        style.fontStyle = FontStyle.Bold;
+        style.normal.textColor = color;
+        
+        Gizmos.DrawLine(from, to);
+        
+        if (text != null)
+        {
+            Handles.Label(to,/*v.ToString() + "\n" + */text, style);
+        }
+        
+    }
+
+    void DrawVector(Vector3 from, Vector3 to, string text = null)
+    {
+        Vector3 v = to - from;
+
+        GUIStyle style = new GUIStyle();
+        style.fontSize = 6;
+        style.fontStyle = FontStyle.Bold;
+
+        Gizmos.DrawLine(from, to);
+        
+        if (text != null)
+        {
+            Handles.Label(to,/*v.ToString() + "\n" + */text, style);
         }
     }
 
