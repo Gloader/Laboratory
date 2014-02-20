@@ -44,7 +44,11 @@ public class HeadLookController : MonoBehaviour {
 
     Vector3 rightOfTarget = Vector3.zero;   
     Vector3 lookDirGoalinHPlane = Vector3.zero;
+
+    Vector3 referenceRightDir = Vector3.zero;
 	
+    Vector3 lookDir = Vector3.zero;
+
 	void Start () {
 		if (rootNode == null) {
 			rootNode = transform;
@@ -89,29 +93,31 @@ public class HeadLookController : MonoBehaviour {
         DrawVector(p, p + t.TransformDirection(headLookVector),Color.black,"headLookVector");
         DrawVector(p, p + t.TransformDirection(headUpVector),Color.black,"headUpVector");
 
-        //Desired look direction in world space
-        DrawVector(p, p + lookDirWorld,Color.green,"lookDirWorld");
+
 
         foreach (BendingSegment segment in segments) 
         {
+            //Desired look direction in world space (LastTransform)
+            t = segment.lastTransform.transform;
+            p = segment.lastTransform.transform.position;
+            DrawVector(p, p + lookDirWorld,Color.green,"lookDirWorld");
+
+            //Neck parent space
             t = segment.firstTransform.parent.transform;
             p = segment.firstTransform.parent.transform.position;
-
-            DrawVector(p, p + Vector3.Reflect(lookDirGoal,segment.referenceUpDir),Color.green,"lookDirGoal");
-
+            DrawVector(p, p + t.TransformDirection(segment.referenceUpDir),Color.blue,"referenceUpDir");
+            DrawVector(p, p + t.TransformDirection(lookDirGoal),Color.cyan,"lookDirGoal");
             DrawVector(p, p + t.TransformDirection(segment.referenceLookDir),Color.blue,"referenceLookDir");
 
-            DrawVector(p, p + segment.referenceUpDir,Color.blue,"referenceUpDir");
+            DrawVector(p, p + t.TransformDirection(rightOfTarget),Color.gray,"rightOfTarget");
+            DrawVector(p, p + t.TransformDirection(lookDirGoalinHPlane),Color.green,"lookDirGoalinHPlane");
+
+            DrawVector(p, p + t.TransformDirection(referenceRightDir),Color.magenta,"referenceRightDir");
+
+            //DrawVector(p, p + t.TransformDirection(lookDir),Color.red,"lookDir"); //lookDir == lookDirGoal
 
             t = segment.firstTransform;
-            p = segment.firstTransform.position;
-                              
-//
-//            DrawVector(p, p + rightOfTarget,Color.cyan,"rightOfTarget");
-//            DrawVector(p, p + lookDirGoalinHPlane,Color.cyan,"lookDirGoalinHPlane");
-
-            //DrawVector(p + segment.referenceLookDir, p + lookDirGoal,Color.blue);
-
+            p = segment.firstTransform.position;                             
         }
 
         //joints not affected
@@ -175,7 +181,8 @@ public class HeadLookController : MonoBehaviour {
 		}
 		
 		// Handle each segment
-		foreach (BendingSegment segment in segments) {
+		foreach (BendingSegment segment in segments) 
+        {
 			Transform t = segment.lastTransform;
 			if (overrideAnimation) {
 				for (int i=segment.chainLength-1; i>=0; i--) {
@@ -231,7 +238,7 @@ public class HeadLookController : MonoBehaviour {
 			hAngle = Mathf.Clamp(hAngle, -segment.maxBendingAngle, segment.maxBendingAngle);
 			vAngle = Mathf.Clamp(vAngle, -segment.maxBendingAngle, segment.maxBendingAngle);
 			
-			Vector3 referenceRightDir =
+			/*Vector3 */referenceRightDir =
 				Vector3.Cross(segment.referenceUpDir, segment.referenceLookDir);
 			
 			// Lerp angles
@@ -252,7 +259,7 @@ public class HeadLookController : MonoBehaviour {
 			Vector3.OrthoNormalize(ref lookDirGoal, ref upDirGoal);
 			
 			// Interpolated look and up directions in neck parent space
-			Vector3 lookDir = lookDirGoal;
+			/*Vector3 */lookDir = lookDirGoal;
 			segment.dirUp = Vector3.Slerp(segment.dirUp, upDirGoal, Time.deltaTime*5);
 			Vector3.OrthoNormalize(ref lookDir, ref segment.dirUp);
 			

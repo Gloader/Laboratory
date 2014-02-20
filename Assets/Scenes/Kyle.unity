@@ -1858,6 +1858,14 @@ Prefab:
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 11400002, guid: 14ea102d071b953409c0e7c3144d7317, type: 2}
+      propertyPath: nonAffectedJoints.Array.data[0].effect
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400002, guid: 14ea102d071b953409c0e7c3144d7317, type: 2}
+      propertyPath: nonAffectedJoints.Array.data[1].effect
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 14ea102d071b953409c0e7c3144d7317, type: 2}
   m_RootGameObject: {fileID: 1325744535}
@@ -2847,9 +2855,9 @@ MonoBehaviour:
     responsiveness: 2.5
   nonAffectedJoints:
   - joint: {fileID: 1571913709}
-    effect: .300000012
+    effect: 0
   - joint: {fileID: 1965530159}
-    effect: .300000012
+    effect: 0
   headLookVector: {x: 0, y: 0, z: 1}
   headUpVector: {x: 0, y: 1, z: 0}
   target: {x: 0, y: 0, z: 0}
